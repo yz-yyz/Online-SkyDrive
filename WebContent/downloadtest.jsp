@@ -7,13 +7,6 @@
 <title>Insert title here</title>
 </head>
 <body>
-<%
-        //获取验证消息
-		request.setCharacterEncoding("UTF-8");
-		String message = (String)request.getAttribute("message");
-	%>
-<div id="mess" style="color:red;"><%=message != null && !message.equals("")?message:"" %></div>
-<a href="load.jsp">返回</a>
-<a href="Filelist">文件列表</a>
+test<a href="DownLoad?filename=test.txt">下载</a>
 </body>
 </html>

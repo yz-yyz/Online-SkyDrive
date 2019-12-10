@@ -59,12 +59,18 @@ public class ZhuCe extends HttpServlet {
 						request, response);
 			}else {
 			    int count = stmt.executeUpdate("INSERT INTO user (username, password) VALUES('"+name+"','"+pwd+"')"	);
-			    if (count == 1) {
+			    boolean create_table = stmt.execute("Create table "+name+"_files as select * from us_files");
+			    //System.out.println(create_table);
+			    if (count == 1&&!create_table) {
 			    	//+µÇÂ½Ò³Ãæ£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡
-					System.out.println("<script type='text/javascript'>"
+			    	
+					/*System.out.println("<script type='text/javascript'>"
 						+ "alert('×¢²á³É¹¦£¡ÂíÉÏµÇÂ¼¡£');"
 						+ "location.href='login.jsp';"
-						+ "</script>");
+						+ "</script>");*/
+			    	request.getRequestDispatcher("login.jsp").forward(
+							request, response);
+					
 			    } else {
 					request.setAttribute("message", "×¢²áÊ§°Ü£¬ÇëÖØÊÔ£¡");
 					request.getRequestDispatcher("register.jsp").forward(

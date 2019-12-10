@@ -8,12 +8,9 @@
 </head>
 <body>
 <%
-        //获取验证消息
-		request.setCharacterEncoding("UTF-8");
-		String message = (String)request.getAttribute("message");
-	%>
-<div id="mess" style="color:red;"><%=message != null && !message.equals("")?message:"" %></div>
-<a href="load.jsp">返回</a>
-<a href="Filelist">文件列表</a>
+	String login =(String) session.getAttribute("login");
+%>
+<%=login %>
 </body>
+
 </html>

@@ -2,6 +2,7 @@ package com.ycl.filelist;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -10,6 +11,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 /**
  * Servlet implementation class Filelist
@@ -32,21 +34,27 @@ public class Filelist extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		//获取指定目录！！
-				String FilePath = "D:"+File.separator+"杂图/";
-				
+				//String FilePath = "D:"+File.separator+"杂图/";
+				HttpSession s = request.getSession();
+				String sname = (String)s.getAttribute("login");
+				String gxPath = getServletContext().getRealPath("/") + File.separator + sname;//sname
+				ArrayList<String> list = new ArrayList();
 				//存储要下载的文件名
-				Map<String, String>fileNameMap = new HashMap<String,String>();
+				//String[] files = null;
+				//Map<String, String>fileNameMap = new HashMap<String,String>();
 				
 				//递归遍历filepath目录下的所有文件和目录将文件名存储到map集合中
 				
-				listfile(new File(FilePath),fileNameMap);
+				listfile(new File(gxPath),list);
 				
 				//将Map集合发送到listfile.jsp页面显示
-				request.setAttribute("fileNameMap", fileNameMap);
-				request.getRequestDispatcher("listfile.jsp").forward(request, response);
+				
+				s.setAttribute("filelist", list);
+				response.sendRedirect("listfile.jsp");
+				//request.getRequestDispatcher("listfile.jsp").forward(request, response);
 
 	}
-	private void listfile(File file, Map<String, String> map) {
+	private void listfile(File file, ArrayList<String> list) {
 		// TODO Auto-generated method stub
 		//如果file代表的不是一个文件而是一个目录
 		if(!file.isFile()){
@@ -57,14 +65,16 @@ public class Filelist extends HttpServlet {
 			//遍历files数组
 			for(File f:files){
 				//递归
-				listfile(f,map);
+				listfile(f,list);
 			}
 		}else{
 			String fileOrgName = file.getName();
 			int index =  fileOrgName.lastIndexOf(".");
 			String fileName = fileOrgName.substring(0, index);
-			System.out.println(file.getName());
-			map.put(file.getName(), fileName);
+			System.out.print(file.getName()+"         ");
+			System.out.println(fileName);
+			list.add(file.getName());
+		
 		}
 	}
 

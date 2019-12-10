@@ -8,11 +8,17 @@
 </head>
 <body>
 <h1>文件上传</h1>
+<%
+	String login=(String)session.getAttribute("login");
+%>
+<%=login %><br>
 <form method="post" action="UploadServlet" enctype="multipart/form-data">
 	选择文件
 	<input type="file" name="uploadFile">
 	<br/>
 	<input type="submit" value="上传">
+	<br>
+	<a href="Filelist">文件列表</a>
 </form>
 </body>
 </html>

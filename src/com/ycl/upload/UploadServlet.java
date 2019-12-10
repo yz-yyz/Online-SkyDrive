@@ -4,6 +4,10 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -11,10 +15,13 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
+
+import com.mysql.jdbc.PreparedStatement;
 
 /**
  * Servlet implementation class UploadServlet
@@ -23,7 +30,8 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 public class UploadServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	//上传文件存储目录
-	private static final String UPLOAD_DIRECTORY = "test";
+	
+	//private static final String UPLOAD_DIRECTORY = "test_u8";
 	
 	//上传配置
 	private static final int MEMORY_THRESHOLD = 1024 * 1024 * 3;//3MB
@@ -49,7 +57,10 @@ public class UploadServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		 //DataInputStream in = null;
-		 FileOutputStream fileOut = null;
+		HttpSession s = request.getSession();
+		String sname = (String)s.getAttribute("login");
+		FileOutputStream fileOut = null;
+		 
 		 
 		if(!ServletFileUpload.isMultipartContent(request)){
 			PrintWriter writer = response.getWriter();
@@ -80,7 +91,7 @@ public class UploadServlet extends HttpServlet {
 		//构造临时路径来存储上传的文件
 		//这个路径相对当前应用目录
 		//String uploadPath = "d:" + File.separator+"在线网盘" + File.separator + UPLOAD_DIRECTORY;
-		String uploadPath = getServletContext().getRealPath("/") + File.separator + UPLOAD_DIRECTORY;
+		String uploadPath = getServletContext().getRealPath("/") + File.separator + sname;//sname
 		System.out.println(uploadPath);
 		
 		
@@ -104,17 +115,59 @@ public class UploadServlet extends HttpServlet {
 						String fileName = new File(item.getName()).getName();
 						
 						//上传文件路径
-						String filePath = "d:" + File.separator+"在线网盘" + File.separator + UPLOAD_DIRECTORY+File.separator+ fileName;
-						
+						String filePath = uploadPath + File.separator + fileName;
 						//在控制台输出文件的上传路径
 						System.out.println(filePath);
+						System.out.println(fileName);
 						//保存文件到硬盘
 						File file2=new File(filePath);
 						//File file=new File(filePath,fileName);
 						//fileOut = new FileOutputStream(file);
 						//fileOut.write(in);
 						item.write(file2);
-						
+						Connection con = null;
+						Statement stmt = null;
+						//java.sql.PreparedStatement pstmt = null;
+						ResultSet rs = null;
+						try {		//从加载驱动开始就要注意捕获异常
+							
+							Class.forName("com.mysql.jdbc.Driver"); //加载数据库驱动
+							//创建连接
+							con = DriverManager.getConnection(
+									"jdbc:mysql://localhost:3306/register?useUnicode=true&characterEncoding=utf-8",
+									"root", "root");
+							//创建Statement对象
+							stmt = con.createStatement();
+							//获得结果集
+							int count = stmt.executeUpdate("INSERT INTO test_u7_files(filename) VALUES('"+fileName+"')");
+							//String sql = "INSERT INTO test_u8_files (filename) VALUES(?)";
+							//stmt = con.prepareStatement(sql);
+							//pstmt.setString(1, fileName);
+							//int count = pstmt.executeUpdate(sql);
+							if(count==1){
+								System.out.println("添加表单成功");
+							}else{
+								System.out.println("添加表单失败");
+							}
+						} catch (Exception e) {
+							e.printStackTrace();
+						} finally {
+							try{
+								rs.close();
+							}catch(Exception e){
+								e.printStackTrace();
+							}
+							try{
+								stmt.close();
+							}catch(Exception e){
+								e.printStackTrace();
+							}
+							try{
+								con.close();
+							}catch(Exception e){
+								e.printStackTrace();
+							}
+						}		
 						request.setAttribute("message", "文件上传成功");
 						
 					}

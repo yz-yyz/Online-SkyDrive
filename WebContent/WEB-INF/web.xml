@@ -33,6 +33,14 @@
     <servlet-name>DoLogin</servlet-name>
     <url-pattern>/servlet/DoLogin</url-pattern>
   </servlet-mapping>
+    <servlet>
+  <servlet-name>DownLoad</servlet-name>
+    <servlet-class>com.ycl.download.DownLoad</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>DownLoad</servlet-name>
+    <url-pattern>/servlet/DownLoad</url-pattern>
+  </servlet-mapping>
   <servlet>
     <servlet-name>Filelist</servlet-name>
     <servlet-class>com.ycl.filelist.Filelist</servlet-class>
@@ -41,4 +49,7 @@
     <servlet-name>Filelist</servlet-name>
     <url-pattern>/servlet/Filelist</url-pattern>
   </servlet-mapping>
+
+    
+  
 </web-app>
