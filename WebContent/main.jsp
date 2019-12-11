@@ -88,11 +88,11 @@
                     <div class="tips">
                         <p class="tip">特别提醒：</p>
                         <p class="tip">1）仅支持文本、音乐、视频、且文件小于40M</p>
-                        <p class="tip">2）文件不得存放黄赌毒相关信息！</p>
-                        <p class="tip">3）文件不能是exe、bat、sys、com、dll类型</p>
-                        <p class="tip">4）不得将本网盘用作储存非法信息！</p>
-                        <p class="tip">5）否则平台将随时删除相关文件！</p>
-                    </div>
+                        <p class="tip">2）文件不得存放黄赌毒相关信息！</p>  
+                        <p class="tip">3）文件不能是exe、bat、sys、com、dll类型</p>   
+                        <p class="tip">4）不得将本网盘用作储存非法信息！</p>    
+                        <p class="tip">5）否则平台将随时删除相关的文件！</p>     
+                    </div> 
                 </div>
             </div>
             <div id="downloadArea" class="rightArea">
