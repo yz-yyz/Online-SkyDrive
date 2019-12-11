@@ -77,7 +77,8 @@ public class DoLogin extends HttpServlet {
 			} else {
 				s.setAttribute("login", name);
 				//request.getRequestDispatcher("testloginsession.jsp").forward(request, response);
-				response.sendRedirect("load.jsp");
+				response.sendRedirect("Filelist");
+				
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

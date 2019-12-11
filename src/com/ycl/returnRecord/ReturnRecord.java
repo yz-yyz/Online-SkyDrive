@@ -1,28 +1,30 @@
-package com.ycl.control;
+package com.ycl.returnRecord;
 
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.ArrayList;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 /**
- * Servlet implementation class ZhuCe
+ * Servlet implementation class ReturnRecord
  */
-@WebServlet("/ZhuCe")
-public class ZhuCe extends HttpServlet {
+@WebServlet("/ReturnRecord")
+public class ReturnRecord extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public ZhuCe() {
+    public ReturnRecord() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -32,17 +34,12 @@ public class ZhuCe extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
+		HttpSession s = request.getSession();
+		String name = (String) s.getAttribute("login");
 		Connection con = null;
 		Statement stmt = null;
+		//java.sql.PreparedStatement pstmt = null;
 		ResultSet rs = null;
-		request.setCharacterEncoding("utf-8");
-		response.setCharacterEncoding("utf-8");
-		String name = request.getParameter("userName");
-		String pwd = request.getParameter("pwd");
-		String ckpwd = request.getParameter("ckpwd");
-		if(!pwd.equals(ckpwd)){
-			request.setAttribute("message", "两次输入密码不一样！");
-		}
 		try{
 			Class.forName("com.mysql.jdbc.Driver");
 			con = DriverManager.getConnection(
@@ -50,33 +47,15 @@ public class ZhuCe extends HttpServlet {
 					"root", "root");
 			stmt = con.createStatement();
 			//获得结果集
-			rs = stmt
-					.executeQuery("SELECT * FROM user WHERE username='"
-							+ name + "'");
-			if(rs.next()){
-				request.setAttribute("message", "注册失败，用户名已经存在，请重新注册。");
-				request.getRequestDispatcher("register.jsp").forward(
-						request, response);
-			}else {
-			    int count = stmt.executeUpdate("INSERT INTO user (username, password) VALUES('"+name+"','"+pwd+"')"	);
-			    boolean create_table = stmt.execute("Create table "+name+" as select * from us_files");
-			    //System.out.println(create_table);
-			    if (count == 1&&!create_table) {
-			    	//+登陆页面！！！！！！！！！！！！！！！！！！！！！！！！！
-			    	
-					/*System.out.println("<script type='text/javascript'>"
-						+ "alert('注册成功！马上登录。');"
-						+ "location.href='login.jsp';"
-						+ "</script>");*/
-			    	request.getRequestDispatcher("login.jsp").forward(
-							request, response);
-					
-			    } else {
-					request.setAttribute("message", "注册失败，请重试！");
-					request.getRequestDispatcher("register.jsp").forward(
-						request, response);
-			    }
+			rs = stmt.executeQuery("SELECT * FROM "+name);
+			ArrayList<String> recordmessage = new ArrayList<String>();
+			while(rs.next()){
+				recordmessage.add(rs.getString(1));
+				recordmessage.add(rs.getString(2));
+				recordmessage.add(rs.getString(3));
 			}
+			s.setAttribute("recordmessage", recordmessage);
+			response.sendRedirect("main.jsp");
 		}catch (Exception e) {
 			e.printStackTrace();
 		} finally {

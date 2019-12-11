@@ -8,6 +8,8 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -128,7 +130,7 @@ public class UploadServlet extends HttpServlet {
 						Connection con = null;
 						Statement stmt = null;
 						//java.sql.PreparedStatement pstmt = null;
-						ResultSet rs = null;
+						
 						try {		//从加载驱动开始就要注意捕获异常
 							
 							Class.forName("com.mysql.jdbc.Driver"); //加载数据库驱动
@@ -138,8 +140,11 @@ public class UploadServlet extends HttpServlet {
 									"root", "root");
 							//创建Statement对象
 							stmt = con.createStatement();
+							Date date = new Date();
+							SimpleDateFormat format=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"); 
+							String time = format.format(date);
 							//获得结果集
-							int count = stmt.executeUpdate("INSERT INTO test_u7_files(filename) VALUES('"+fileName+"')");
+							int count = stmt.executeUpdate("INSERT INTO "+sname+"(filename,events,time) VALUES('"+fileName.toString()+"','upload','"+time+"')");
 							//String sql = "INSERT INTO test_u8_files (filename) VALUES(?)";
 							//stmt = con.prepareStatement(sql);
 							//pstmt.setString(1, fileName);
@@ -152,11 +157,7 @@ public class UploadServlet extends HttpServlet {
 						} catch (Exception e) {
 							e.printStackTrace();
 						} finally {
-							try{
-								rs.close();
-							}catch(Exception e){
-								e.printStackTrace();
-							}
+							
 							try{
 								stmt.close();
 							}catch(Exception e){
@@ -177,7 +178,7 @@ public class UploadServlet extends HttpServlet {
 			request.setAttribute("message", "错误信息："+ex.getMessage());
 		}
 		//跳转到message.jsp
-		getServletContext().getRequestDispatcher("/message2.jsp").forward(request, response);
+		getServletContext().getRequestDispatcher("/main.jsp").forward(request, response);
 	}
 	
 

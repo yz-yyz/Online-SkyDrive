@@ -38,19 +38,22 @@ public class Filelist extends HttpServlet {
 				HttpSession s = request.getSession();
 				String sname = (String)s.getAttribute("login");
 				String gxPath = getServletContext().getRealPath("/") + File.separator + sname;//sname
-				ArrayList<String> list = new ArrayList();
+				ArrayList<String> list = new ArrayList<String>();
 				//存储要下载的文件名
 				//String[] files = null;
 				//Map<String, String>fileNameMap = new HashMap<String,String>();
 				
 				//递归遍历filepath目录下的所有文件和目录将文件名存储到map集合中
+				File f = new File(gxPath);
+				if(!f.isFile()&&f.exists()){
+					listfile(f,list);
+				}
 				
-				listfile(new File(gxPath),list);
 				
 				//将Map集合发送到listfile.jsp页面显示
 				
 				s.setAttribute("filelist", list);
-				response.sendRedirect("listfile.jsp");
+				response.sendRedirect("ReturnRecord");
 				//request.getRequestDispatcher("listfile.jsp").forward(request, response);
 
 	}
