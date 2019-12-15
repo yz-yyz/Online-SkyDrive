@@ -11,4 +11,6 @@ public interface UserDao {
 	public Vector<User> findUsersByName(String name);
 	//添加用户
 	public int insert(User user);
+	//建表
+	public void createUsertable(String username);
 }

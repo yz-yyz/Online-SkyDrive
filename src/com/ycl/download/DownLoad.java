@@ -5,12 +5,12 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URLEncoder;
-import java.sql.Connection;
+/*import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.Date;*/
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -18,12 +18,15 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-//1.ÎÄ¼þ¶ÁÈ¡Â·¾¶£¿£¿
-//2.ÎÄ¼þ±£´æÂ·¾¶
+
+import com.ycl.register.dao.impl.FileRDaoImpl;
+import com.ycl.register.entity.FileR;
+//1.ï¿½Ä¼ï¿½ï¿½ï¿½È¡Â·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+//2.ï¿½Ä¼ï¿½ï¿½ï¿½ï¿½ï¿½Â·ï¿½ï¿½
 /**
  * Servlet implementation class DownLoad
  */
-@WebServlet("/DownLoad")
+//@WebServlet("/DownLoad")
 public class DownLoad extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
@@ -40,68 +43,75 @@ public class DownLoad extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
-		//µÃµ½ÒªÏÂÔØµÄÎÄ¼þÃû
+		//ï¿½Ãµï¿½Òªï¿½ï¿½ï¿½Øµï¿½ï¿½Ä¼ï¿½ï¿½ï¿½
 		
         String fileName = request.getParameter("filename");
-        //ÒªÏÂÔØµÄÎÄ¼þµÄÄ¿Â¼
-        String fileSavePath = "d:" + File.separator+"ÔÚÏßÍøÅÌ" ;
+        //Òªï¿½ï¿½ï¿½Øµï¿½ï¿½Ä¼ï¿½ï¿½ï¿½Ä¿Â¼
+        String fileSavePath = "d:" +File.separator+"åœ¨çº¿ç½‘ç›˜" ;
         HttpSession s = request.getSession();
 		String mulu = (String)s.getAttribute("login");
 		String uploadPath = getServletContext().getRealPath("/") + File.separator + mulu;//sname
 		
-        //ÒªÏÂÔØµÄÎÄ¼þ
+        //Òªï¿½ï¿½ï¿½Øµï¿½ï¿½Ä¼ï¿½
         File file = new File(fileSavePath + File.separator + fileName);
-        //Èç¹ûÎÄ¼þ²»´æÔÚ
+        //ï¿½ï¿½ï¿½ï¿½Ä¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         if(!file.exists()){
-            request.setAttribute("info","ÄúÒªÏÂÔØµÄ×ÊÔ´ÒÑ±»É¾³ý!");
+            request.setAttribute("info","ï¿½ï¿½Òªï¿½ï¿½ï¿½Øµï¿½ï¿½ï¿½Ô´ï¿½Ñ±ï¿½É¾ï¿½ï¿½!");
             request.getRequestDispatcher("messagedownload.jsp").forward(request,response);
             return;
         }
  
-        //ÉèÖÃÏìÓ¦Í·,¿ØÖÆä¯ÀÀÆ÷ÏÂÔØ¸ÃÎÄ¼þ
+        //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó¦Í·,ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ø¸ï¿½ï¿½Ä¼ï¿½
         response.setHeader("content-disposition","attachment;filename*=UTF-8''" + URLEncoder.encode(fileName,"UTF-8").replaceAll("\\+", "%20"));
-        //¶ÁÈ¡ÒªÏÂÔØµÄÎÄ¼þ,±£´æµ½ÎÄ¼þÊäÈëÁ÷
+        //ï¿½ï¿½È¡Òªï¿½ï¿½ï¿½Øµï¿½ï¿½Ä¼ï¿½,ï¿½ï¿½ï¿½æµ½ï¿½Ä¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         FileInputStream in = new FileInputStream(fileSavePath + File.separator + fileName);
         System.out.println(fileSavePath + File.separator + fileName);
-        //´´½¨Êä³öÁ÷
+        //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         OutputStream out = response.getOutputStream();
-        //´´½¨»º³åÇø
+        //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         byte buffer[] = new byte[1024];
         int len = 0;
-        //Ñ­»·½«ÊäÈëÁ÷ÖÐµÄÄÚÈÝ¶ÁÈ¡µ½»º³åÇøµ±ÖÐ
+        //Ñ­ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ðµï¿½ï¿½ï¿½ï¿½Ý¶ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         while(0<=(len=in.read(buffer))){
-            //Êä³ö»º³åÇøµÄÄÚÈÝµ½ä¯ÀÀÆ÷,ÊµÏÖÎÄ¼þÏÂÔØ
+            //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ýµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½,Êµï¿½ï¿½ï¿½Ä¼ï¿½ï¿½ï¿½ï¿½ï¿½
             out.write(buffer, 0, len);
         }
-        //¹Ø±ÕÎÄ¼þÊäÈëÊä³öÁ÷
+        //ï¿½Ø±ï¿½ï¿½Ä¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         out.close();
         in.close();
-        Connection con = null;
+        FileRDaoImpl f_up = new FileRDaoImpl();
+		FileR f = new FileR(fileName,"dowmload");
+		f_up.insert(f, mulu);
+			
+		request.setAttribute("message", "ä¸‹è½½æˆåŠŸï¼");
+        
+        
+       /* Connection con = null;
 		Statement stmt = null;
 		//java.sql.PreparedStatement pstmt = null;
 		
-		 try {		//´Ó¼ÓÔØÇý¶¯¿ªÊ¼¾ÍÒª×¢Òâ²¶»ñÒì³£
+		 try {		//ï¿½Ó¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê¼ï¿½ï¿½Òª×¢ï¿½â²¶ï¿½ï¿½ï¿½ì³£
 				
-				Class.forName("com.mysql.jdbc.Driver"); //¼ÓÔØÊý¾Ý¿âÇý¶¯
-				//´´½¨Á¬½Ó
+				Class.forName("com.mysql.jdbc.Driver"); //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý¿ï¿½ï¿½ï¿½ï¿½ï¿½
+				//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 				con = DriverManager.getConnection(
 						"jdbc:mysql://localhost:3306/register?useUnicode=true&characterEncoding=utf-8",
 						"root", "root");
-				//´´½¨Statement¶ÔÏó
+				//ï¿½ï¿½ï¿½ï¿½Statementï¿½ï¿½ï¿½ï¿½
 				stmt = con.createStatement();
 				Date date = new Date();
 				SimpleDateFormat format=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"); 
 				String time = format.format(date);
-				//»ñµÃ½á¹û¼¯
+				//ï¿½ï¿½Ã½ï¿½ï¿½ï¿½ï¿½
 				int count = stmt.executeUpdate("INSERT INTO "+mulu+"(filename,events,time) VALUES('"+fileName.toString()+"','dowmload','"+time+"')");
 				//String sql = "INSERT INTO test_u8_files (filename) VALUES(?)";
 				//stmt = con.prepareStatement(sql);
 				//pstmt.setString(1, fileName);
 				//int count = pstmt.executeUpdate(sql);
 				if(count==1){
-					System.out.println("Ìí¼Ó±íµ¥³É¹¦");
+					System.out.println("ï¿½ï¿½Ó±ï¿½ï¿½É¹ï¿½");
 				}else{
-					System.out.println("Ìí¼Ó±íµ¥Ê§°Ü");
+					System.out.println("ï¿½ï¿½Ó±ï¿½Ê§ï¿½ï¿½");
 				}
 				response.sendRedirect("Filelist");
 	        }catch (Exception e) {
@@ -118,7 +128,7 @@ public class DownLoad extends HttpServlet {
 				}catch(Exception e){
 					e.printStackTrace();
 				}
-			}		
+			}*/		
     }
 	
 

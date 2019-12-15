@@ -2,12 +2,12 @@ package com.ycl.delete;
 
 import java.io.File;
 import java.io.IOException;
-import java.sql.Connection;
+/*import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.Date;*/
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -16,10 +16,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.ycl.register.dao.impl.FileRDaoImpl;
+import com.ycl.register.entity.FileR;
+
 /**
  * Servlet implementation class Delete
  */
-@WebServlet("/Delete")
+//@WebServlet("/Delete")
 public class Delete extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
@@ -57,31 +60,36 @@ public class Delete extends HttpServlet {
 			    	 
 			    	
 			    }else{
-			    	Connection con = null;
+			    	FileRDaoImpl f_up = new FileRDaoImpl();
+					FileR f = new FileR(filename,"delete");
+					f_up.insert(f, mulu);
+						
+					request.setAttribute("message", "åˆ é™¤æˆåŠŸï¼");
+			    	/*Connection con = null;
 					Statement stmt = null;
 					//java.sql.PreparedStatement pstmt = null;
 					
 			    	try{
-			    		Class.forName("com.mysql.jdbc.Driver"); //¼ÓÔØÊı¾İ¿âÇı¶¯
-						//´´½¨Á¬½Ó
+			    		Class.forName("com.mysql.jdbc.Driver"); //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½İ¿ï¿½ï¿½ï¿½ï¿½ï¿½
+						//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 						con = DriverManager.getConnection(
 								"jdbc:mysql://localhost:3306/register?useUnicode=true&characterEncoding=utf-8",
 								"root", "root");
-						//´´½¨Statement¶ÔÏó
+						//ï¿½ï¿½ï¿½ï¿½Statementï¿½ï¿½ï¿½ï¿½
 						stmt = con.createStatement();
 						Date date = new Date();
 						SimpleDateFormat format=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"); 
 						String time = format.format(date);
-						//»ñµÃ½á¹û¼¯
+						//ï¿½ï¿½Ã½ï¿½ï¿½ï¿½ï¿½
 						int count = stmt.executeUpdate("INSERT INTO "+mulu+"(filename,events,time) VALUES('"+filename.toString()+"','delete','"+time+"')");
 						//String sql = "INSERT INTO test_u8_files (filename) VALUES(?)";
 						//stmt = con.prepareStatement(sql);
 						//pstmt.setString(1, fileName);
 						//int count = pstmt.executeUpdate(sql);
 						if(count==1){
-							System.out.println("Ìí¼Ó±íµ¥³É¹¦");
+							System.out.println("ï¿½ï¿½Ó±ï¿½ï¿½É¹ï¿½");
 						}else{
-							System.out.println("Ìí¼Ó±íµ¥Ê§°Ü");
+							System.out.println("ï¿½ï¿½Ó±ï¿½Ê§ï¿½ï¿½");
 						}
 						response.sendRedirect("Filelist");
 			        }catch (Exception e) {
@@ -98,7 +106,7 @@ public class Delete extends HttpServlet {
 						}catch(Exception e){
 							e.printStackTrace();
 						}
-					}
+					}*/
 			    }
 			    response.sendRedirect("load.jsp");
 	}

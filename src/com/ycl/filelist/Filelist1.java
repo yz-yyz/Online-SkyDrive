@@ -2,9 +2,10 @@ package com.ycl.filelist;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+/*import java.util.HashMap;
+import java.util.Map;*/
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -16,14 +17,14 @@ import javax.servlet.http.HttpSession;
 /**
  * Servlet implementation class Filelist
  */
-@WebServlet("/Filelist")
-public class Filelist extends HttpServlet {
+//@WebServlet("/Filelist")
+public class Filelist1 extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public Filelist() {
+    public Filelist1() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -33,41 +34,52 @@ public class Filelist extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
-		//»ñÈ¡Ö¸¶¨Ä¿Â¼£¡£¡
-				//String FilePath = "D:"+File.separator+"ÔÓÍ¼/";
+		//ï¿½ï¿½È¡Ö¸ï¿½ï¿½Ä¿Â¼ï¿½ï¿½ï¿½ï¿½
+				//String FilePath = "D:"+File.separator+"ï¿½ï¿½Í¼/";
 				HttpSession s = request.getSession();
 				String sname = (String)s.getAttribute("login");
 				String gxPath = getServletContext().getRealPath("/") + File.separator + sname;//sname
 				ArrayList<String> list = new ArrayList<String>();
-				//´æ´¢ÒªÏÂÔØµÄÎÄ¼þÃû
+				//ï¿½æ´¢Òªï¿½ï¿½ï¿½Øµï¿½ï¿½Ä¼ï¿½ï¿½ï¿½
 				//String[] files = null;
 				//Map<String, String>fileNameMap = new HashMap<String,String>();
 				
-				//µÝ¹é±éÀúfilepathÄ¿Â¼ÏÂµÄËùÓÐÎÄ¼þºÍÄ¿Â¼½«ÎÄ¼þÃû´æ´¢µ½map¼¯ºÏÖÐ
+				//ï¿½Ý¹ï¿½ï¿½ï¿½ï¿½filepathÄ¿Â¼ï¿½Âµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¼ï¿½ï¿½ï¿½Ä¿Â¼ï¿½ï¿½ï¿½Ä¼ï¿½ï¿½ï¿½ï¿½æ´¢ï¿½ï¿½mapï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 				File f = new File(gxPath);
 				if(!f.isFile()&&f.exists()){
 					listfile(f,list);
 				}
 				
 				
-				//½«Map¼¯ºÏ·¢ËÍµ½listfile.jspÒ³ÃæÏÔÊ¾
-				
-				s.setAttribute("filelist", list);
-				response.sendRedirect("ReturnRecord");
+				//ï¿½ï¿½Mapï¿½ï¿½ï¿½Ï·ï¿½ï¿½Íµï¿½listfile.jspÒ³ï¿½ï¿½ï¿½ï¿½Ê¾
+				request.setCharacterEncoding("utf-8");
+				StringBuilder str = new StringBuilder("");
+				for(String ls:list){
+					//s.append("<p class='className'>"+u.getPassword()+" "+u.getUsername()+"</p>");
+					String a=  "<div class='file'><img src='images/fileicon.png' class='fileicon' alt='1'><div class='filename'>";
+					String b=ls.toString();
+					String c=  "</div><a href='login.html?filename="+ls.toString()+"' class='links'><button type='button'>download<tton></a><span class='message'>message</span></div>";
+					str.append(a+b+c);
+					System.out.println(ls);
+				}
+				PrintWriter out = response.getWriter();
+				out.print(s);
+					/*s.setAttribute("filelist", list);
+				response.sendRedirect("ReturnRecord");*/
 				//request.getRequestDispatcher("listfile.jsp").forward(request, response);
 
 	}
 	private void listfile(File file, ArrayList<String> list) {
 		// TODO Auto-generated method stub
-		//Èç¹ûfile´ú±íµÄ²»ÊÇÒ»¸öÎÄ¼þ¶øÊÇÒ»¸öÄ¿Â¼
+		//ï¿½ï¿½ï¿½fileï¿½ï¿½ï¿½ï¿½Ä²ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½Ä¼ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½Ä¿Â¼
 		if(!file.isFile()){
 			
-			//ÁÐ³öÄ¿Â¼ÏÂÎÄ¼þ
+			//ï¿½Ð³ï¿½Ä¿Â¼ï¿½ï¿½ï¿½Ä¼ï¿½
 			File[] files = file.listFiles();
 			
-			//±éÀúfilesÊý×é
+			//ï¿½ï¿½ï¿½ï¿½filesï¿½ï¿½ï¿½ï¿½
 			for(File f:files){
-				//µÝ¹é
+				//ï¿½Ý¹ï¿½
 				listfile(f,list);
 			}
 		}else{

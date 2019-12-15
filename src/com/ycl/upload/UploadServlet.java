@@ -13,7 +13,7 @@ import java.util.Date;
 import java.util.List;
 
 import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
+//import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -23,26 +23,29 @@ import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 
+import com.ycl.insertRecord.IR;
 import com.mysql.jdbc.PreparedStatement;
+import com.ycl.register.dao.impl.FileRDaoImpl;
+import com.ycl.register.entity.FileR;
 
 /**
  * Servlet implementation class UploadServlet
  */
-@WebServlet("/UploadServlet")
+//@WebServlet("/UploadServlet")
 public class UploadServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	//ÉÏ´«ÎÄ¼ş´æ´¢Ä¿Â¼
+	//æ¶“å©ç´¶é‚å›¦æ¬¢ç€›æ¨ºåé©î†¼ç¶
 	
 	//private static final String UPLOAD_DIRECTORY = "test_u8";
 	
-	//ÉÏ´«ÅäÖÃ
+	//æ¶“å©ç´¶é–°å¶‡ç–†
 	private static final int MEMORY_THRESHOLD = 1024 * 1024 * 3;//3MB
 	private static final int MAX_FILE_SIZE = 1024 * 1024 * 40;
 	private static final int MAX_REQUEST_SIZE = 1024 * 1024 * 50;
 	//private File storeFile;
 	
 	
-	//ÉÏ´«Êı¾İ¼°±£´æÎÄ¼ş
+	//æ¶“å©ç´¶éç‰ˆåµé™å©ç¹šç€›æ¨»æƒæµ ï¿½
 	
        
     /**
@@ -66,93 +69,102 @@ public class UploadServlet extends HttpServlet {
 		 
 		if(!ServletFileUpload.isMultipartContent(request)){
 			PrintWriter writer = response.getWriter();
-			writer.println("Error:±íµ¥±ØĞë°üº¬ enctype=multipart/form-data");
+			writer.println("Error:ç›ã„¥å´Ÿè¹‡å‘´ã€é–å‘­æƒˆ enctype=multipart/form-data");
 			writer.flush();
 			return;
 		}
 		
-		//ÅäÖÃÉÏ´«²ÎÊı
+		//é–°å¶‡ç–†æ¶“å©ç´¶é™å‚›æšŸ
 		DiskFileItemFactory factory = new DiskFileItemFactory();
 		
-		//ÉèÖÃÄÚ´æÁÙ½çÖµ - ³¬¹ıºó½«²úÉúÁÙÊ±ÎÄ¼ş²¢´æ´¢ÓÚÁÙÊ±Ä¿Â¼ÖĞ
+		//ç’å‰§ç–†éå‘­ç“¨æ¶“å¯¸æ™«éŠï¿½ - ç“’å‘°ç¹ƒéšåº¡çš¢æµœÑ…æ•“æ¶“å­˜æ¤‚é‚å›¦æ¬¢éªè·ºç“¨éŒã„¤ç°¬æ¶“å­˜æ¤‚é©î†¼ç¶æ¶“ï¿½
 		factory.setSizeThreshold(MEMORY_THRESHOLD);
 		
-		//ÉèÖÃÁÙÊ±´æ´¢Ä¿Â¼
+		//ç’å‰§ç–†æ¶“å­˜æ¤‚ç€›æ¨ºåé©î†¼ç¶
 		factory.setRepository(new File(System.getProperty("java.io.tmpdir")));
 		
 		ServletFileUpload upload = new ServletFileUpload(factory);
-		//ÉèÖÃ×î´óÎÄ¼şÉÏ´«Öµ
+		//ç’å‰§ç–†éˆï¿½æ¾¶Ñ„æƒæµ æœµç¬‚æµ¼çŠ²ï¿½ï¿½
 		upload.setFileSizeMax(MAX_FILE_SIZE);
 		
-		//ÉèÖÃ×î´óÇëÇóÖµ£¨°üº¬ÎÄ¼şºÍ±íµ¥Êı¾İ£©
+		//ç’å‰§ç–†éˆï¿½æ¾¶Ñ†î‡¬å§¹å‚šï¿½ç¡·ç´™é–å‘­æƒˆé‚å›¦æ¬¢éœå²ƒã€ƒé—æ›ŸæšŸé¹î‡†ç´š
 		upload.setSizeMax(MAX_REQUEST_SIZE);
 		
-		//ÖĞÎÄ´¦Àí
+		//æ¶“î…Ÿæƒæ¾¶å‹­æ‚Š
 		upload.setHeaderEncoding("UTF-8");
 		
-		//¹¹ÔìÁÙÊ±Â·¾¶À´´æ´¢ÉÏ´«µÄÎÄ¼ş
-		//Õâ¸öÂ·¾¶Ïà¶Ôµ±Ç°Ó¦ÓÃÄ¿Â¼
-		//String uploadPath = "d:" + File.separator+"ÔÚÏßÍøÅÌ" + File.separator + UPLOAD_DIRECTORY;
+		//é‹å‹¯ï¿½çŠ±å¤éƒæƒ°çŸ¾å¯°å‹¬æ½µç€›æ¨ºåæ¶“å©ç´¶é¨å‹¬æƒæµ ï¿½
+		//æ©æ¬é‡œç’ºîˆšç·é©ç¨¿î‡®è¤°æ’³å¢ æ´æ—‚æ•¤é©î†¼ç¶
+		//String uploadPath = "d:" + File.separator+"é¦ã„§åšç¼ƒæˆ æ´" + File.separator + UPLOAD_DIRECTORY;
 		String uploadPath = getServletContext().getRealPath("/") + File.separator + sname;//sname
 		System.out.println(uploadPath);
 		
 		
 		
-		//Èç¹ûÄ¿Â¼²»´æÔÚÔò´´½¨
+		//æ¿¡å‚›ç‰é©î†¼ç¶æ¶“å¶…ç“¨é¦ã„¥å¯é’æ¶˜ç¼“
 		File uploadDir = new File(uploadPath);
 		if(!uploadDir.exists()){
 			uploadDir.mkdir();
 		}
-		//D:\\ÔÚÏßÍøÅÌ\\test
+		//D:\\é¦ã„§åšç¼ƒæˆ æ´\\test
 		try{
-			//½âÎöÇëÇóÎÄ¼ş
+			//ç‘™ï½†ç€½ç’‡é”‹çœ°é‚å›¦æ¬¢
 			@SuppressWarnings("unchecked")
 			List<FileItem> formItems = upload.parseRequest(request);
 			
 			if(formItems !=null && formItems.size()>0){
-				//µü´ú±íµ¥Êı¾İ
+				//æ©î…å”¬ç›ã„¥å´Ÿéç‰ˆåµ
 				for (FileItem item:formItems){
-					//´¦Àí²»ÔÚ±íµ¥ÖĞµÄ×Ö¶Î
+					//æ¾¶å‹­æ‚Šæ¶“å¶…æ¹ªç›ã„¥å´Ÿæ¶“î… æ®‘ç€›æ¥î†Œ
 					if(!item.isFormField()){
 						String fileName = new File(item.getName()).getName();
 						
-						//ÉÏ´«ÎÄ¼şÂ·¾¶
+						//æ¶“å©ç´¶é‚å›¦æ¬¢ç’ºîˆšç·
 						String filePath = uploadPath + File.separator + fileName;
-						//ÔÚ¿ØÖÆÌ¨Êä³öÎÄ¼şµÄÉÏ´«Â·¾¶
+						//é¦ã„¦å¸¶é’è·ºå½´æˆæ’³åš­é‚å›¦æ¬¢é¨å‹ªç¬‚æµ¼çŠºçŸ¾å¯°ï¿½
 						System.out.println(filePath);
 						System.out.println(fileName);
-						//±£´æÎÄ¼şµ½Ó²ÅÌ
+						//æ·‡æ¿†ç“¨é‚å›¦æ¬¢é’æ‰®â€–é©ï¿½
 						File file2=new File(filePath);
+						item.write(file2);
+						//IR ir = new IR();
+						//ir.insert(sname,fileName);
+						FileRDaoImpl f_up = new FileRDaoImpl();
+						FileR f = new FileR(fileName,"upload");
+						f_up.insert(f, sname);
+							
+						request.setAttribute("message", "ä¸Šä¼ æˆåŠŸï¼");
+							
 						//File file=new File(filePath,fileName);
 						//fileOut = new FileOutputStream(file);
 						//fileOut.write(in);
-						item.write(file2);
-						Connection con = null;
+						
+						/*Connection con = null;
 						Statement stmt = null;
 						//java.sql.PreparedStatement pstmt = null;
 						
-						try {		//´Ó¼ÓÔØÇı¶¯¿ªÊ¼¾ÍÒª×¢Òâ²¶»ñÒì³£
+						try {		//æµ åº¡å§æä»‹â”é”ã„¥ç´‘æ¿®å¬ªæ°¨ç‘•ä½¹æ•é°å¿”å´Ÿé‘¾å³°ç´“ç”¯ï¿½
 							
-							Class.forName("com.mysql.jdbc.Driver"); //¼ÓÔØÊı¾İ¿âÇı¶¯
-							//´´½¨Á¬½Ó
+							Class.forName("com.mysql.jdbc.Driver"); //é”çŠºæµ‡éç‰ˆåµæ´æ’»â”é”ï¿½
+							//é’æ¶˜ç¼“æ©ç‚´å¸´
 							con = DriverManager.getConnection(
 									"jdbc:mysql://localhost:3306/register?useUnicode=true&characterEncoding=utf-8",
 									"root", "root");
-							//´´½¨Statement¶ÔÏó
+							//é’æ¶˜ç¼“Statementç€µç¡…è–„
 							stmt = con.createStatement();
 							Date date = new Date();
 							SimpleDateFormat format=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"); 
 							String time = format.format(date);
-							//»ñµÃ½á¹û¼¯
-							int count = stmt.executeUpdate("INSERT INTO "+sname+"(filename,events,time) VALUES('"+fileName.toString()+"','upload','"+time+"')");
+							//é‘¾å³°ç·±ç¼æ’´ç‰é—†ï¿½
+							int count = stmt.executeUpdate("INSERT "+sname+"(filename,event,time) VALUES('"+fileName.toString()+"','upload','"+time+"')");
 							//String sql = "INSERT INTO test_u8_files (filename) VALUES(?)";
 							//stmt = con.prepareStatement(sql);
 							//pstmt.setString(1, fileName);
 							//int count = pstmt.executeUpdate(sql);
 							if(count==1){
-								System.out.println("Ìí¼Ó±íµ¥³É¹¦");
+								System.out.println("ç’æ¿ç¶å¨£è¯²å§é´æ„¬å§›");
 							}else{
-								System.out.println("Ìí¼Ó±íµ¥Ê§°Ü");
+								System.out.println("ç’æ¿ç¶å¨£è¯²å§æ¾¶è¾«è§¦");
 							}
 						} catch (Exception e) {
 							e.printStackTrace();
@@ -168,16 +180,14 @@ public class UploadServlet extends HttpServlet {
 							}catch(Exception e){
 								e.printStackTrace();
 							}
-						}		
-						request.setAttribute("message", "ÎÄ¼şÉÏ´«³É¹¦");
-						
+						}*/
 					}
 				}
 			}
 		}catch(Exception ex){
-			request.setAttribute("message", "´íÎóĞÅÏ¢£º"+ex.getMessage());
+			request.setAttribute("message", "é–¿æ¬’î‡¤æ·‡â„ƒä¼…é”›ï¿½"+ex.getMessage());
 		}
-		//Ìø×ªµ½message.jsp
+		//ç’ºå® æµ†é’ç™¿essage.jsp
 		getServletContext().getRequestDispatcher("/main.jsp").forward(request, response);
 	}
 	

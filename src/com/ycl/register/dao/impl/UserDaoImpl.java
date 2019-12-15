@@ -66,7 +66,8 @@ public class UserDaoImpl extends BaseDao implements UserDao {
 		
 		return (User)this.executeQuery(getUserByNameProcessor, sql, params);
 	}
-
+	
+	
 	public Vector<User> findUsersByName(String name) {
 		String sql = "select * from user where username = ?";
 		Object[] params = {name};
@@ -77,11 +78,11 @@ public class UserDaoImpl extends BaseDao implements UserDao {
 				Vector<User> users = new Vector<User>();
 				
 				while(rs.next()) {
-					int id = rs.getInt("id");
-					String username = rs.getString("password");
-					String password = rs.getString("username");
+					//int id = rs.getInt("id");
+					String username = rs.getString("username");
+					String password = rs.getString("password");
 					
-					User user = new User(id, username, password);
+					User user = new User( username, password);
 					users.add(user);
 				}
 				
@@ -92,5 +93,11 @@ public class UserDaoImpl extends BaseDao implements UserDao {
 		};
 		
 		return (Vector<User>)this.executeQuery(getUsersByNameProcessor, sql, params);
+	}
+	public void createUsertable(String username){
+		String sql = "create table ? (filename varchar(50),event varchar(50),time varchar(50))";
+		String str = username;
+		Object[] params = {str};
+		System.out.println(this.exceuteUpdate(sql, params));
 	}
 }

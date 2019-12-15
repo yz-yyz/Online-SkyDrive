@@ -15,7 +15,7 @@ public abstract class BaseDao {
 	private static String driver = 
 		"com.mysql.jdbc.Driver";// 鏁帮拷?锟藉簱椹卞姩瀛楃涓�
 	private static String url = 
-		"jdbc:mysql://localhost:3306/register?useUnicode=true&characterEncoding=utf-8";// 杩炴帴URL瀛楃涓�
+		"jdbc:mysql://localhost:3306/ycl_user?useUnicode=true&characterEncoding=utf-8";// 杩炴帴URL瀛楃涓�
 	private static String user = "root"; // 鏁帮拷?锟藉簱鐢ㄦ埛锟�??
 	private static String password = "root"; // 鐢ㄦ埛瀵嗭拷?
 	
@@ -80,6 +80,7 @@ public abstract class BaseDao {
 	 * @param params 锟�?锟芥暟鏁扮粍
 	 * @return 鎵ц缁撴灉
 	 */
+	//
 	public int exceuteUpdate(String sql, Object...params){
 		int result = 0;
 		conn = this.getConnection();
@@ -87,8 +88,9 @@ public abstract class BaseDao {
 			if(conn != null && conn.isClosed() == false) {
 				pstmt = conn.prepareStatement(sql);
 				for(int i = 0;i < params.length;i++){
-					pstmt.setObject(i + 1, params[i]);	
+					pstmt.setObject(i+1, params[i]);	
 				}
+				
 				result = pstmt.executeUpdate();
 			}
 		} catch (SQLException e) {
@@ -119,4 +121,6 @@ public abstract class BaseDao {
 		}
 		return result;
 	}
+	
+	
 }

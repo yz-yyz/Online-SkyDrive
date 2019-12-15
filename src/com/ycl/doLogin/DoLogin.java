@@ -1,13 +1,14 @@
 package com.ycl.doLogin;
 
 import java.io.IOException;
-import java.sql.Connection;
+/*import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
-import java.sql.Statement;
+import java.sql.Statement;*/
+import java.util.Vector;
 
 import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
+//import javax.servlet.ServletRequest;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -20,7 +21,7 @@ import com.ycl.register.entity.User;
 /**
  * Servlet implementation class DoLogin
  */
-@WebServlet("/DoLogin")
+//@WebServlet("/DoLogin")
 public class DoLogin extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
@@ -37,41 +38,64 @@ public class DoLogin extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		Connection con = null;
-		Statement stmt = null;
-		ResultSet rs = null;
 		HttpSession s = request.getSession();
 		request.setCharacterEncoding("UTF-8");
 		String name = request.getParameter("username");
 		String pwd = request.getParameter("password");
 		
 		if(name == null || pwd == null) {
-			request.setAttribute("message", "Î´ÊäÈëÓÃ»§Ãû»òÕßÃÜÂë£¡");
+			request.setAttribute("message", "å¯†ç æˆ–è€…åå­—ä¸èƒ½ä¸ºç©ºï¼");
 			request.getRequestDispatcher("login.jsp").forward(
 				request, response);
 		}
 		
 		if(name.trim().isEmpty() || pwd.trim().isEmpty()) {
-			request.setAttribute("message", "Î´ÊäÈëÓÃ»§Ãû»òÕßÃÜÂë£¡");
+			request.setAttribute("message", "å¯†ç æˆ–è€…åå­—ä¸èƒ½ä¸ºç©ºï¼");
 			request.getRequestDispatcher("login.jsp").forward(
 				request, response);
 		}
+		UserDaoImpl u_lg = new UserDaoImpl();
+		int count = u_lg.countUserByName(name);
+		if(count==0){
+			request.setAttribute("message", "ç”¨æˆ·ä¸å­˜åœ¨ï¼");
+			request.getRequestDispatcher("login.jsp").forward(
+				request, response);
+		}
+		Vector<User> users = u_lg.findUsersByName(name);
+		for(User u:users){
+			
+			if(u.getPassword().trim().equals(pwd.trim())){
+				s.setAttribute("login", name);
+				//request.getRequestDispatcher("testloginsession.jsp").forward(request, response);
+				response.sendRedirect("load.jsp");
+			}
+			else{
+				
+				request.setAttribute("message", "å¯†ç ä¸æ­£ç¡®ï¼");
+				request.getRequestDispatcher("login.jsp").forward(
+					request, response);
+			}
+		}
+		// TODO Auto-generated method stub
+		/*Connection con = null;
+		Statement stmt = null;
+		ResultSet rs = null;
 		
-		try {		//´Ó¼ÓÔØÇı¶¯¿ªÊ¼¾ÍÒª×¢Òâ²¶»ñÒì³£
-			Class.forName("com.mysql.jdbc.Driver"); //¼ÓÔØÊı¾İ¿âÇı¶¯
-			//´´½¨Á¬½Ó
+		
+		try {		//ï¿½Ó¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê¼ï¿½ï¿½Òª×¢ï¿½â²¶ï¿½ï¿½ï¿½ì³£
+			Class.forName("com.mysql.jdbc.Driver"); //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½İ¿ï¿½ï¿½ï¿½ï¿½ï¿½
+			//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 			con = DriverManager.getConnection(
 					"jdbc:mysql://localhost:3306/register?useUnicode=true&characterEncoding=utf-8",
 					"root", "root");
-			//´´½¨Statement¶ÔÏó
+			//ï¿½ï¿½ï¿½ï¿½Statementï¿½ï¿½ï¿½ï¿½
 			stmt = con.createStatement();
-			//»ñµÃ½á¹û¼¯
+			//ï¿½ï¿½Ã½ï¿½ï¿½ï¿½ï¿½
 			rs = stmt
 					.executeQuery("SELECT * FROM user WHERE username='"
 							+ name + "' AND password='" + pwd +"'");
 			if (!rs.next()) {
-				request.setAttribute("message", "ÓÃ»§Ãû»òÕßÃÜÂë´íÎó£¬ÇëÖØĞÂµÇÂ¼£¡");
+				request.setAttribute("message", "ï¿½Ã»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Âµï¿½Â¼ï¿½ï¿½");
 				request.getRequestDispatcher("login.jsp").forward(
 						request, response);
 			} else {
@@ -98,7 +122,7 @@ public class DoLogin extends HttpServlet {
 			}catch(Exception e){
 				e.printStackTrace();
 			}
-		}		
+		}	*/	
 	}
 
 	/**

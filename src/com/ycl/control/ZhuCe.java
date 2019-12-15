@@ -3,7 +3,6 @@ package com.ycl.control;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.ResultSet;
 import java.sql.Statement;
 
 import javax.servlet.ServletException;
@@ -12,10 +11,13 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.ycl.register.dao.impl.UserDaoImpl;
+import com.ycl.register.entity.User;
+
 /**
  * Servlet implementation class ZhuCe
  */
-@WebServlet("/ZhuCe")
+//@WebServlet("/ZhuCe")
 public class ZhuCe extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
@@ -32,29 +34,71 @@ public class ZhuCe extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
-		Connection con = null;
-		Statement stmt = null;
-		ResultSet rs = null;
 		request.setCharacterEncoding("utf-8");
 		response.setCharacterEncoding("utf-8");
 		String name = request.getParameter("userName");
 		String pwd = request.getParameter("pwd");
 		String ckpwd = request.getParameter("ckpwd");
 		if(!pwd.equals(ckpwd)){
-			request.setAttribute("message", "Á½´ÎÊäÈëÃÜÂë²»Ò»Ñù£¡");
+			request.setAttribute("register", "ä¸¤æ¬¡è¾“å…¥å¯†ç ä¸ä¸€æ ·");
+			request.getRequestDispatcher("register.jsp").forward(request, response);
 		}
+		UserDaoImpl u = new UserDaoImpl();
+		int count = u.countUserByName(name);
+		if (count==1){
+			request.setAttribute("message", "è´¦æˆ·ä»¥å­˜åœ¨ï¼");
+			request.getRequestDispatcher("register.jsp").forward(request, response);
+		}else{
+			u.insert(new User(name,pwd));
+			Connection con = null;
+			Statement stmt = null;
+			try{
+				Class.forName("com.mysql.jdbc.Driver");
+				con = DriverManager.getConnection(
+						"jdbc:mysql://localhost:3306/ycl_user?useUnicode=true&characterEncoding=utf-8",
+						"root", "root");
+				stmt = con.createStatement();
+				boolean create_table = stmt.execute("Create table "+name+"_db as select * from u");
+			    if (!create_table) {
+			    } else {
+					request.setAttribute("message", "æ³¨å†Œå¤±è´¥ï¼");
+					request.getRequestDispatcher("register.jsp").forward(
+						request, response);
+			    }
+			}catch (Exception e) {
+				e.printStackTrace();
+			} finally {
+				try{
+					stmt.close();
+				}catch(Exception e){
+					e.printStackTrace();
+				}
+				try{
+					con.close();
+				}catch(Exception e){
+					e.printStackTrace();
+				}
+			}
+			
+			response.sendRedirect("login.jsp");
+		}
+	}
+		/*Connection con = null;
+		Statement stmt = null;
+		ResultSet rs = null;
+		
 		try{
 			Class.forName("com.mysql.jdbc.Driver");
 			con = DriverManager.getConnection(
-					"jdbc:mysql://localhost:3306/register?useUnicode=true&characterEncoding=utf-8",
+					"jdbc:mysql://localhost:3306/ycl_user?useUnicode=true&characterEncoding=utf-8",
 					"root", "root");
 			stmt = con.createStatement();
-			//»ñµÃ½á¹û¼¯
+			//ï¿½ï¿½Ã½ï¿½ï¿½ï¿½ï¿½
 			rs = stmt
 					.executeQuery("SELECT * FROM user WHERE username='"
 							+ name + "'");
 			if(rs.next()){
-				request.setAttribute("message", "×¢²áÊ§°Ü£¬ÓÃ»§ÃûÒÑ¾­´æÔÚ£¬ÇëÖØĞÂ×¢²á¡£");
+				request.setAttribute("message", "×¢ï¿½ï¿½Ê§ï¿½Ü£ï¿½ï¿½Ã»ï¿½ï¿½ï¿½ï¿½Ñ¾ï¿½ï¿½ï¿½ï¿½Ú£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×¢ï¿½á¡£");
 				request.getRequestDispatcher("register.jsp").forward(
 						request, response);
 			}else {
@@ -62,17 +106,17 @@ public class ZhuCe extends HttpServlet {
 			    boolean create_table = stmt.execute("Create table "+name+" as select * from us_files");
 			    //System.out.println(create_table);
 			    if (count == 1&&!create_table) {
-			    	//+µÇÂ½Ò³Ãæ£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡
+			    	//+ï¿½ï¿½Â½Ò³ï¿½æ£¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 			    	
 					/*System.out.println("<script type='text/javascript'>"
-						+ "alert('×¢²á³É¹¦£¡ÂíÉÏµÇÂ¼¡£');"
+						+ "alert('×¢ï¿½ï¿½É¹ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ïµï¿½Â¼ï¿½ï¿½');"
 						+ "location.href='login.jsp';"
 						+ "</script>");*/
-			    	request.getRequestDispatcher("login.jsp").forward(
+			    	/*request.getRequestDispatcher("login.jsp").forward(
 							request, response);
 					
 			    } else {
-					request.setAttribute("message", "×¢²áÊ§°Ü£¬ÇëÖØÊÔ£¡");
+					request.setAttribute("message", "æ³¨å†Œå¤±è´¥ï¼");
 					request.getRequestDispatcher("register.jsp").forward(
 						request, response);
 			    }
@@ -95,8 +139,8 @@ public class ZhuCe extends HttpServlet {
 			}catch(Exception e){
 				e.printStackTrace();
 			}
-		}
-	}
+		}*/
+	
 
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
