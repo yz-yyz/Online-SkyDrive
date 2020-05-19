@@ -1,0 +1,56 @@
+#search-bar-content{
+    width:500px;
+}
+
+#type-nav{
+    margin-top:50px;
+}
+
+.tips{
+    text-align: right;
+    height:60px;
+    line-height:60px;
+    color:black;
+    background-color:#fff;
+    font-size:20px;
+}
+
+#tip{
+    margin-right:30px;
+}
+
+#result{
+    color:#909399;
+    margin-bottom:20px;
+    font-size:30px;
+}
+
+.nodata{
+    color:#909399;
+    margin:50px;
+    font-size:24px;
+}
+
+#posts{
+    padding:50px;
+    margin:20px 100px;
+    width:1000px;
+    min-height:600px;
+    background-color:#fff;
+}
+
+.post{
+    margin-bottom:10px;
+    height:200px;
+}
+
+.date{
+    float:right;
+    padding:3px 0;
+}
+
+.sname{
+    float:right;
+    margin-right:10px;
+    padding:3px 0;
+}

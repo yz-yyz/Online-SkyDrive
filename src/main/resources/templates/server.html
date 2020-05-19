@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>软件售后服务系统</title>
+    <link rel="stylesheet" type="text/css" href="../static/css/common.css">
+    <link rel="stylesheet" href="../static/css/server.css">
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+</head>
+<body>
+    <div class="header">
+            <h1 id="title" class="v-center">
+                软件售后服务系统
+            </h1>
+
+            <div id="userinfo" class="v-center">
+                <div id="avatar">
+                    <i class="el-icon-s-custom"></i>
+                </div>
+                <span id="username">
+                        {{servername}}
+                    </span>
+                <div id="logout">
+                    <a href="" @click="logout" id="btn-logout" >退出</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="center clearfix">
+
+        <div id="nav" class="clearfix">
+                <el-col :span="12">
+                    <el-menu default-active="0" class="el-menu-vertical-demo" @select="handleSelect"
+                             background-color="#545c64" text-color="#fff" active-text-color="#dddddd">
+                        <el-menu-item v-bind:index="item.index" v-for="(item, index) in funcs">
+                            <i class="el-icon-menu"></i>
+                            <span slot="title">{{item.fncname}}</span>
+                        </el-menu-item>
+                    </el-menu>
+                </el-col>
+        </div>
+        <div id="functions_area">
+                    <div id="server-cards" v-if="flag == 0">
+                        <div class="nodata" v-if="serviceItems.length == 0 ">暂无售后服务</div>
+                        <el-card class="box-card" v-for="item in serviceItems.slice((currentPage-1)*pagesize,currentPage*pagesize)" >
+                            <el-row :gutter="20">
+                                <el-col :span="3">软件名称:</el-col>
+                                <el-col :span="5">{{item.softwareName}}</el-col>
+                                <el-col :span="3">当前状态:</el-col>
+                                <el-col :span="5">
+                                        <span v-if="isServer(item.serviceState)">正在进行售后处理</span>
+                                        <span v-if="!isServer(item.serviceState)">异常</span>
+                                </el-col>
+                                <el-col :span="3">服务人员:</el-col>
+                                <el-col :span="5">{{item.serverName}}</el-col>
+                            </el-row>
+
+                            <el-divider></el-divider>
+                            <el-row :gutter="20">
+                                <el-col :span="3">问题类型:</el-col>
+                                <el-col :span="21">{{item.serviceKind}}</el-col>
+                            </el-row>
+                            <el-row class="detail">
+                                <el-col :span="24">具体描述:</el-col>
+                            </el-row>
+                            <div class="service-detail">{{item.serviceInfo}}</div>
+                        </el-card>
+                        <div  class="page h-center" v-if="serviceItems.length != 0">
+                            <el-pagination
+                                    background
+                                    layout="prev, pager, next,jumper"
+                                    @current-change="handleCurrentChange"
+                                    :current-page="currentPage"
+                                    :page-size="3"
+                                    :total="serviceItems.length">
+                            </el-pagination>
+                        </div>
+                    </div>
+
+                    <div id="emails" v-if ="flag == 1">
+                        <el-table :data="msgItems.slice((currentPage-1)*pagesize,currentPage*pagesize)" key="0">
+                            <el-table-column type="expand">
+                                <template slot-scope="props">
+                                    <el-form label-position="left" inline class="demo-table-expand">
+                                        <el-form-item label="内容" width="300px">
+                                            <span>{{ props.row.justMessage }}</span>
+                                        </el-form-item>
+                                        <el-form-item label="发件人" >
+                                            <span>{{ props.row.sendName }}</span>
+                                        </el-form-item>
+                                        <el-form-item label="发送日期">
+                                            <span>{{ props.row.messageDate }}</span>
+                                        </el-form-item>
+                                    </el-form>
+                                </template>
+                            </el-table-column>
+                            <el-table-column show-overflow-tooltip prop="justMessage" label="内容" width="300">
+                            </el-table-column>
+                            <el-table-column prop="sendName"  label="发件人"  width="200">
+                            </el-table-column>
+                            <el-table-column prop="messageDate" label="发送日期" >
+                            </el-table-column>
+                        </el-table>
+                        <div  class="page h-center" v-if="msgItems.length != 0">
+                            <el-pagination
+                                    background
+                                    layout="prev, pager, next,jumper"
+                                    @current-change="handleCurrentChange"
+                                    :current-page="currentPage"
+                                    :page-size="pagesize"
+                                    :total="msgItems.length">
+                            </el-pagination>
+                        </div>
+                    </div>
+
+                <div id="service-management" v-if ="flag == 2">
+                    <el-table :data="serviceItems.slice((currentPage-1)*pagesize,currentPage*pagesize)"  key="1">
+                        <el-table-column show-overflow-tooltip prop="softwareName" label="软件名称" width="150">
+                        </el-table-column>
+                        <el-table-column prop="userName"  label="申请用户"  width="150">
+                        </el-table-column>
+                        <el-table-column prop="serviceKind" label="问题类型" width="100">
+                        </el-table-column>
+                        <el-table-column label="当前状态">
+                            <template slot-scope="scope">
+                                <span v-if="isServer(scope.row.serviceState)">正在进行售后处理</span>
+                                <span v-if="!isServer(scope.row.serviceState)">异常</span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column label="操作">
+                            <template slot-scope="scope">
+                                <el-button type="primary" @click="finish(scope.row.softwareName,scope.row.userName)" size="mini">完成</el-button>
+                                <el-button type="danger" @click="change(scope.row.softwareName,scope.row.userName)" size="mini">异常申请</el-button>
+                            </template>
+                        </el-table-column>
+                    </el-table>
+                    <div  class="page h-center" v-if="serviceItems.length != 0">
+                        <el-pagination
+                                background
+                                layout="prev, pager, next,jumper"
+                                @current-change="handleCurrentChange"
+                                :current-page="currentPage"
+                                :page-size="pagesize"
+                                :total="serviceItems.length">
+                        </el-pagination>
+                    </div>
+                </div>
+                    <div id="sendmsg" v-if="flag == 3">
+                        <el-form ref="form" :model="msg" label-width="80px" size="mini">
+                            <el-form-item label="收件人">
+                                <el-input v-model="msg.receiver"></el-input>
+                            </el-form-item>
+                            <el-form-item label="内容">
+                                <el-input type="textarea" v-model="msg.msg"></el-input>
+                            </el-form-item>
+
+                            <el-form-item>
+                                <el-button type="primary" @click="sendMsg">提交</el-button>
+                                <el-button>取消</el-button>
+                            </el-form-item>
+                        </el-form>
+                    </div>
+            </div>
+    </div>
+    <div class="footer">
+            <span class="details"><a href="">咨询电话:8888-8888</a></span>
+            <span class="details"><a href="">技术说明</a></span>
+            <span class="details"><a href="">帮助中心</a></span>
+            <span class="details"><a href="">关于我们</a></span>
+    </div>
+
+    <script src="../static/js/server.js"></script>
+
+</body>
+</html>
